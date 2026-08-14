@@ -10,8 +10,8 @@ public final class DemoModePolicy {
 
     public boolean isEnabled() { return enabled; }
 
-    public void requireSandbox(VerifierEnvironment environment) {
-        if (enabled && environment.getType() != VerifierEnvironment.Type.SANDBOX) {
+    public void requireSandbox(boolean productionEnvironment) {
+        if (enabled && productionEnvironment) {
             throw new IllegalStateException("Demo mode cannot use production identity services");
         }
     }
