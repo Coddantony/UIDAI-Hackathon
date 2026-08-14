@@ -20,6 +20,7 @@ async def create_verifier(admin: Verifier):
     admin = dict(admin)
     if record is None:
         await db.verifiers.insert_one(admin)
+        admin.pop("password", None)
         return admin
     return {"success": False, "error": "UserName Already Exists"}
 
@@ -31,10 +32,13 @@ async def create_verifier(admin: Verifier):
 async def login_verifier(login: LoginVerifier):
     user = await db.verifiers.find_one({"username": login.username})
     if user:
+        if not user.get("isActive", True):
+            raise HTTPException(status_code=403, detail="Verifier account is inactive")
         if verify_password(login.password, user.get("password")):
             admin = await db.verifiers.find_one_and_update(
                 {"username": login.username},
-                {"$set": {"lastLogin": datetime.utcnow()}})
+                {"$set": {"lastLogin": datetime.utcnow()}},
+                return_document=True)
             return admin
         raise HTTPException(status_code=401, detail="Invalid Password")
     raise HTTPException(status_code=401, detail="Username Does Not Exist")
@@ -46,17 +50,16 @@ async def login_verifier(login: LoginVerifier):
               tags=["verifier"])
 async def fetch_user(api_key: str, vid: str):
     verifier = await db.verifiers.find_one({"api_key": api_key})
-    if verifier:
-        user = await db.users.find_one({"vid": vid})
-        if user:
-            vlog = VerifierInfo(
-                vid=vid,
-                api_key=api_key,
-                name=verifier.get("name"),
-                accessedAt=datetime.utcnow()
-            )
-            vlog = dict(vlog)
-            await db.access_logs.insert_one(vlog)
-            return user
-        return HTTPException(status_code=401, detail="User Does Not Exist")
-    return HTTPException(status_code=401, detail="Invalid API Key")
+    if not verifier or not verifier.get("isActive", True):
+        raise HTTPException(status_code=401, detail="Invalid or inactive API Key")
+    user = await db.users.find_one({"vid": vid, "isActive": True})
+    if not user:
+        raise HTTPException(status_code=401, detail="User Does Not Exist")
+    vlog = VerifierInfo(
+        vid=vid,
+        api_key=api_key,
+        name=verifier.get("name"),
+        accessedAt=datetime.utcnow()
+    )
+    await db.access_logs.insert_one(dict(vlog))
+    return user
