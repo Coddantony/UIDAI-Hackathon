@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 
 REQUIRED_PRODUCTION_SECRETS = (
@@ -7,7 +8,7 @@ REQUIRED_PRODUCTION_SECRETS = (
 )
 
 
-def validate_production_security_config(env: str | None = None) -> None:
+def validate_production_security_config(env: Optional[str] = None) -> None:
     """Fail fast when production is missing cryptographic secrets."""
     if (env or os.getenv("ENV", "development")).lower() != "production":
         return
