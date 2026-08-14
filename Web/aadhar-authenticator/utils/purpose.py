@@ -1,7 +1,7 @@
-from enum import StrEnum
+from enum import Enum
 
 
-class VerificationPurpose(StrEnum):
+class VerificationPurpose(str, Enum):
     SERVICE_ACCESS = "service_access"
     ACCOUNT_RECOVERY = "account_recovery"
     BENEFIT_DELIVERY = "benefit_delivery"
