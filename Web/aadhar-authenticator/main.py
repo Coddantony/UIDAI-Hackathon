@@ -6,6 +6,7 @@ from routes.user import user
 from routes.verifier import verifier
 from routes.health import health
 from middleware.security import SecurityHeadersMiddleware
+from config.indexes import ensure_indexes
 import os
 
 app = FastAPI(
@@ -23,6 +24,11 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
 )
 app.add_middleware(SecurityHeadersMiddleware)
+
+
+@app.on_event("startup")
+async def startup():
+    await ensure_indexes()
 
 
 @app.get("/", response_class=RedirectResponse)
