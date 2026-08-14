@@ -8,9 +8,9 @@ import static org.junit.Assert.assertTrue;
 
 public class IdentityInputValidatorTest {
     @Test
-    public void validatesKnownVerhoeffExamples() {
-        assertTrue(IdentityInputValidator.isValidAadhaar("236919785312"));
-        assertFalse(IdentityInputValidator.isValidAadhaar("236919785313"));
+    public void validatesVerhoeffExamples() {
+        assertTrue(IdentityInputValidator.isValidAadhaar("100000000004"));
+        assertFalse(IdentityInputValidator.isValidAadhaar("100000000005"));
         assertFalse(IdentityInputValidator.isValidAadhaar("123456789012"));
     }
 
@@ -30,7 +30,7 @@ public class IdentityInputValidatorTest {
 
     @Test
     public void masksSensitiveIdentifiers() {
-        assertEquals("••••••••5312", IdentityInputValidator.maskAadhaar("236919785312"));
+        assertEquals("••••••••0004", IdentityInputValidator.maskAadhaar("100000000004"));
         assertEquals("••••••3210", IdentityInputValidator.maskMobile("9876543210"));
     }
 }
