@@ -4,6 +4,7 @@ from models.user import User
 from config.database import db
 from utils.password import get_password_hash, verify_password
 from datetime import datetime
+from pymongo import ReturnDocument
 import uuid
 
 verifier = APIRouter()
@@ -38,7 +39,7 @@ async def login_verifier(login: LoginVerifier):
             admin = await db.verifiers.find_one_and_update(
                 {"username": login.username},
                 {"$set": {"lastLogin": datetime.utcnow()}},
-                return_document=True)
+                return_document=ReturnDocument.AFTER)
             return admin
         raise HTTPException(status_code=401, detail="Invalid Password")
     raise HTTPException(status_code=401, detail="Username Does Not Exist")
