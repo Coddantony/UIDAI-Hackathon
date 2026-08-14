@@ -5,6 +5,7 @@ from routes.auth import auth
 from routes.user import user
 from routes.verifier import verifier
 from routes.health import health
+from middleware.security import SecurityHeadersMiddleware
 import os
 
 app = FastAPI(
@@ -21,6 +22,7 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
 )
+app.add_middleware(SecurityHeadersMiddleware)
 
 
 @app.get("/", response_class=RedirectResponse)
