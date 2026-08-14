@@ -40,3 +40,8 @@ app.include_router(health, prefix="/api/v1")
 app.include_router(auth, prefix="/api/v1/user")
 app.include_router(user, prefix="/api/v1/user")
 app.include_router(verifier, prefix="/api/v1/verifier")
+
+# Backward-compatible routes for existing clients.
+app.include_router(auth, prefix="/user")
+app.include_router(user, prefix="/user")
+app.include_router(verifier, prefix="/verifier")
