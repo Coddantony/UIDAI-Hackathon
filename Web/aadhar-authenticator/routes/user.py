@@ -50,3 +50,15 @@ async def get_access_logs(
     return await db.access_logs.find(
         {"vid": user_record.get("vid")}
     ).sort("accessedAt", -1).skip(skip).limit(limit).to_list(length=limit)
+
+
+@user.get('/access_logs/summary', tags=["user"])
+async def access_log_summary(username: str = Depends(get_current_username)):
+    user_record = await db.users.find_one({"username": username})
+    total = await db.access_logs.count_documents({"vid": user_record.get("vid")})
+    latest = await db.access_logs.find_one(
+        {"vid": user_record.get("vid")}, sort=[("accessedAt", -1)])
+    return {
+        "total_accesses": total,
+        "last_accessed_at": latest.get("accessedAt") if latest else None,
+    }
