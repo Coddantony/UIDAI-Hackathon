@@ -3,16 +3,17 @@ from datetime import datetime
 from typing import Optional
 from config.variables import SAMPLE_XML
 
+
 class User(BaseModel):
     username: str = Field(max_length=64)
     password: str = Field(max_length=255)
     eKYCXML: str = Field()
-    name: Optional[str] = Field()
-    dob: Optional[str] = Field()
-    gender: Optional[str] = Field(min_length=1, max_length=1)
+    name: Optional[str] = Field(default=None)
+    dob: Optional[str] = Field(default=None)
+    gender: Optional[str] = Field(default=None, min_length=1, max_length=1)
     isActive: bool = True
-    createdAt: datetime = datetime.utcnow()
-    lastLogin: datetime = datetime.utcnow()
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    lastLogin: datetime = Field(default_factory=datetime.utcnow)
 
     class Config:
         allow_population_by_field_name = True
@@ -39,9 +40,9 @@ class LoginUser(BaseModel):
 
 
 class UpdateUser(BaseModel):
-    username: Optional[str] = Field(max_length=64)
-    password: Optional[str] = Field(max_length=255)
-    eKYCXML: Optional[str] = Field()
+    username: Optional[str] = Field(default=None, max_length=64)
+    password: Optional[str] = Field(default=None, min_length=8, max_length=255)
+    eKYCXML: Optional[str] = Field(default=None)
 
     class Config:
         schema_extra = {
